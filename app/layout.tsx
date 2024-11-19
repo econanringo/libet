@@ -20,15 +20,22 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
+      <body>
+        <header>
+          <nav>
+            <a href="/">Home</a>
+            <a href="/upload">Upload</a>
+          </nav>
+        </header>
+        <main>{children}</main>
+        <footer>
+          <p>&copy; 2024 My Video App</p>
+        </footer>
       </body>
     </html>
   );
