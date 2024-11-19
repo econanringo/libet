@@ -1,14 +1,18 @@
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../../../firebaseConfig";
 import { Video } from "../../../types";
-import Disqus from "../../components/Disqus";
+import Disqus from "../../components/Disqus"; // パスが正しいか確認
 
-interface Props {
-  params: { videoId: string };
-}
+// 動的ページ用のServer Component
+export default async function VideoPage({
+  params,
+}: {
+  params: Promise<{ videoId: string }>;
+}) {
+  // 非同期に解決されるparamsを取得
+  const { videoId } = await params;
 
-const VideoPage = async ({ params }: Props) => {
-  const videoId = params.videoId;
+  // Firebase から動画データを取得
   const docRef = doc(db, "videos", videoId);
   const docSnap = await getDoc(docRef);
 
@@ -18,7 +22,8 @@ const VideoPage = async ({ params }: Props) => {
 
   const video = docSnap.data() as Video;
 
-  // 自分のアプリのベース URL を設定
+  // YouTube埋め込みURL
+  const embedUrl = `https://www.youtube.com/embed/${video.videoId}`;
   const baseURL = "https://my-video-app.vercel.app"; // デプロイ後に変更
   const videoURL = `${baseURL}/videos/${videoId}`;
 
@@ -28,7 +33,7 @@ const VideoPage = async ({ params }: Props) => {
       <iframe
         width="560"
         height="315"
-        src={`https://www.youtube.com/embed/${video.videoId}`}
+        src={embedUrl}
         title={video.title}
         frameBorder="0"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -39,13 +44,11 @@ const VideoPage = async ({ params }: Props) => {
 
       {/* Disqus コメントセクション */}
       <Disqus
-        shortname="my-video-app" // Disqus の shortname を入力
+        shortname="my-video-app"
         identifier={videoId}
         title={video.title}
         url={videoURL}
       />
     </div>
   );
-};
-
-export default VideoPage;
+}
