@@ -4,7 +4,7 @@ import { db } from "../firebaseConfig";
 import { Video } from "../types";
 
 const VideosPage = async () => {
-  // Firestore から動画データを取得
+  // Firestore から動画データを取
   const videosCollection = collection(db, "videos");
   const querySnapshot = await getDocs(videosCollection);
 
