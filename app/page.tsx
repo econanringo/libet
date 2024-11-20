@@ -31,40 +31,67 @@ export default function VideoListPage() {
   }, []);
 
   if (loading) {
-    return <p>Loading videos...</p>;
+    return <p className="text-center text-xl">Loading videos...</p>;
   }
 
   return (
-    <div>
-      <h1>Video List</h1>
-      <ul style={{ listStyle: "none", padding: 0 }}>
-        {videos.map((video) => (
-          <li key={video.id} style={{ marginBottom: "20px" }}>
+    <div className="max-w-7xl mx-auto px-4 py-6">
+      {/* 最新の動画 */}
+      <div className="mb-8 flex items-center space-x-8">
+        {videos.length > 0 && (
+          <Link href={`/videos/${videos[0].id}`} className="flex w-full">
+            {/* 左側にタイトルと情報 */}
+            <div className="flex-1">
+              <small className="text-red-500 font-bold">Recommend</small>
+              <h2 className="text-3xl font-semibold text-gray-800 mb-2">
+                {videos[0].title}
+              </h2>
+              <p className="text-sm text-gray-600">{videos[0].speaker}</p>
+              <p className="text-sm text-gray-600">{videos[0].date}</p>
+            </div>
+
+            {/* 右側にサムネイル画像 (少し大きめ) */}
+            <div className="relative w-full sm:w-1/2 lg:w-1/2 h-56 sm:h-64 lg:h-72 ml-4">
+              <Image
+                src={`https://img.youtube.com/vi/${videos[0].videoId}/0.jpg`}
+                alt={videos[0].title}
+                layout="fill"
+                objectFit="cover"
+                className="rounded-lg"
+              />
+            </div>
+          </Link>
+        )}
+      </div>
+        <div className="border border-gray-300"></div>
+      {/* 他の動画リスト（4つ横並び） */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {videos.slice(1, 5).map((video) => (
+          <div
+            key={video.id}
+            className="relative b pt-4 pb-6 border-r- border-gray-300"
+          >
+            {/* サムネイル画像 */}
+
             <Link href={`/videos/${video.id}`}>
-                {/* サムネイル画像 */}
-                <div
-                  style={{
-                    position: "relative",
-                    width: "320px", // サムネイルの幅
-                    height: "180px", // サムネイルの高さ (16:9 アスペクト比)
-                    overflow: "hidden",
-                    borderRadius: "8px", // 角を丸くする
-                  }}
-                >
-                  <Image
-                    src={`https://img.youtube.com/vi/${video.videoId}/0.jpg`}
-                    alt={video.title}
-                    layout="fill" // 親要素を埋める
-                    objectFit="cover" // 画像を親要素にフィット
-                  />
-                </div>
-                <h2 style={{ margin: "10px 0 5px" }}>{video.title}</h2>
-                <p>Speaker: {video.speaker}</p>
-                <p>Date: {video.date}</p>
+              <div className="relative w-full h-40 mb-4">
+                <Image
+                  src={`https://img.youtube.com/vi/${video.videoId}/0.jpg`}
+                  alt={video.title}
+                  layout="fill"
+                  objectFit="cover"
+                  className="rounded-lg"
+                />
+              </div>
+
+              {/* 動画情報 */}
+              <h2 className="text-lg font-semibold text-gray-800">{video.title}</h2>
+              <p className="text-sm text-gray-600">{video.speaker}</p>
+              <p className="text-sm text-gray-600">{video.date}</p>
             </Link>
-          </li>
+          </div>
         ))}
-      </ul>
+      </div>
     </div>
   );
 }
