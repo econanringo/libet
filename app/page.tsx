@@ -37,20 +37,6 @@ export default function VideoListPage() {
   return (
     <div>
       <h1>Video List</h1>
-      <button
-        onClick={fetchVideos}
-        style={{
-          padding: "10px 20px",
-          marginBottom: "20px",
-          backgroundColor: "#0070f3",
-          color: "white",
-          border: "none",
-          borderRadius: "5px",
-          cursor: "pointer",
-        }}
-      >
-        Refresh
-      </button>
       <ul style={{ listStyle: "none", padding: 0 }}>
         {videos.map((video) => (
           <li key={video.id} style={{ marginBottom: "20px" }}>
