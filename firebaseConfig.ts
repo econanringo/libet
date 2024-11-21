@@ -1,5 +1,6 @@
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApps } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
+import { getAnalytics } from "firebase/analytics";
 
 // 環境変数から Firebase の設定を読み込み
 const firebaseConfig = {
@@ -13,7 +14,11 @@ const firebaseConfig = {
 };
 
 // Firebase の初期化
-const app = initializeApp(firebaseConfig);
-
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0]
+const analytics =
+  process.env.NODE_ENV === 'production' && typeof window !== 'undefined'
+    ? getAnalytics(app)
+    : undefined
 // Firestore のインスタンスを取得
 export const db = getFirestore(app);
+export { analytics }
