@@ -63,7 +63,7 @@ export default function VideoListPage() {
           </Link>
         )}
       </div>
-        <div className="border border-gray-300"></div>
+      <div className="border border-gray-300"></div>
       {/* 他の動画リスト（4つ横並び） */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {videos.slice(1, 5).map((video) => (
