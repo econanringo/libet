@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { saveVideo } from "../../lib/firestore";
+import { logEvent } from "firebase/analytics";
+import { analytics } from "../../firebaseConfig";
 
 const UploadPage = () => {
   const [title, setTitle] = useState("");
@@ -17,6 +19,9 @@ const UploadPage = () => {
     setSpeaker("");
     setDate("");
     alert("Video saved successfully!");
+    if (analytics) {
+      logEvent(analytics, "button_click", { button_name: "upload_button" });
+    }
   };
 
   return (
