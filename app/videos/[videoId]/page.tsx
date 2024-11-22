@@ -24,7 +24,7 @@ export default async function VideoPage({
 
   // YouTube埋め込みURL
   const embedUrl = `https://www.youtube.com/embed/${video.videoId}`;
-  const baseURL = "https://my-video-app.vercel.app"; // デプロイ後に変更
+  const baseURL = "https://sozanliberalarts-libet-20th.vercel.app"; // デプロイ後に変更
   const videoURL = `${baseURL}/videos/${videoId}`;
 
   return (
