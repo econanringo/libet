@@ -4,5 +4,7 @@ export interface Video {
     videoId: string;
     speaker: string;
     date: string; // yyyy-mm-dd フォーマットを想定
+    recaptchaToken: string;
   }
+  
   
