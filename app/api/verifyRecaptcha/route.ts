@@ -1,5 +1,3 @@
-// app/api/verifyRecaptcha/route.ts
-
 import { NextResponse } from "next/server";
 
 const verifyRecaptcha = async (token: string) => {
@@ -14,11 +12,13 @@ const verifyRecaptcha = async (token: string) => {
   });
 
   const data = await res.json();
+  console.log('reCAPTCHA Response:', data); // reCAPTCHAのレスポンスを確認
   return data.success;
 };
 
 export async function POST(req: Request) {
   const { recaptchaToken } = await req.json(); // リクエストボディを取得
+  console.log('Received recaptchaToken:', recaptchaToken); // 受け取ったトークンを確認
 
   const isValid = await verifyRecaptcha(recaptchaToken);
 

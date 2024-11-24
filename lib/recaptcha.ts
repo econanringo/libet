@@ -1,4 +1,3 @@
-// lib/recaptcha.ts
 import axios from 'axios';
 
 export const verifyRecaptcha = async (token: string) => {

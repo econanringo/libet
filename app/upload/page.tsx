@@ -1,6 +1,5 @@
-"use client";
-
-import { useState } from "react";
+'use client';
+import { useState, useEffect } from "react";
 import { saveVideo } from "../../lib/firestore";
 import { logEvent } from "firebase/analytics";
 import { analytics } from "../../firebaseConfig";
@@ -14,12 +13,22 @@ const UploadPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
+  const [sessionExpired, setSessionExpired] = useState(false);
+
+  useEffect(() => {
+    // タイマーをセット：2分後にタイムアウト
+    const timer = setTimeout(() => {
+      setSessionExpired(true); // セッション期限切れ
+    }, 2 * 60 * 1000); // 2分
+
+    return () => clearTimeout(timer); // コンポーネントがアンマウントされたときにタイマーをクリア
+  }, []);
 
   // reCAPTCHA トークンを取得する関数
   const handleRecaptchaVerify = async () => {
     try {
       const recaptcha = await load(process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!); // サイトキーを環境変数から取得
-      const token = await recaptcha.execute('upload_video'); // 'upload_video' はアクション名
+      const token = await recaptcha.execute("upload_video"); // 'upload_video' はアクション名
       setRecaptchaToken(token); // トークンをステートに保存
     } catch (error) {
       console.error("reCAPTCHA verification failed", error);
@@ -27,8 +36,15 @@ const UploadPage = () => {
     }
   };
 
+  // Submit ボタンの処理
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // タイムアウト後はフォーム送信不可
+    if (sessionExpired) {
+      setError("セッションの期限が切れました。ページをリロードしてください。");
+      return;
+    }
 
     // トークンがない場合はエラー
     if (!recaptchaToken) {
@@ -51,10 +67,10 @@ const UploadPage = () => {
       setLoading(true);
 
       // サーバーサイドで reCAPTCHA トークンを検証
-      const response = await fetch('/api/verifyRecaptcha', {
-        method: 'POST',
+      const response = await fetch("/api/verifyRecaptcha", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ recaptchaToken }),
       });
@@ -88,11 +104,24 @@ const UploadPage = () => {
     }
   };
 
+  useEffect(() => {
+    // ページがロードされた時にreCAPTCHAを自動的に検証開始
+    handleRecaptchaVerify();
+  }, []);
+
   return (
     <form onSubmit={handleSubmit} style={{ maxWidth: 500, margin: "0 auto" }}>
       <h1>Upload Video</h1>
 
-      {error && <div style={{ color: "red", marginBottom: "10px" }}>{error}</div>}
+      {sessionExpired && (
+        <div style={{ color: "red", marginBottom: "10px" }}>
+          セッションの期限が切れました。ページをリロードしてください。
+        </div>
+      )}
+
+      {error && !sessionExpired && (
+        <div style={{ color: "red", marginBottom: "10px" }}>{error}</div>
+      )}
 
       <input
         type="text"
@@ -122,16 +151,7 @@ const UploadPage = () => {
         required
       />
 
-      {/* reCAPTCHA v3 ボタン */}
-      <button
-        type="button"
-        onClick={handleRecaptchaVerify}
-        disabled={loading}
-      >
-        {loading ? "Verifying..." : "Verify reCAPTCHA"}
-      </button>
-
-      <button type="submit" disabled={loading}>
+      <button type="submit" disabled={loading || sessionExpired || !recaptchaToken}>
         {loading ? "Uploading..." : "Submit"}
       </button>
     </form>
