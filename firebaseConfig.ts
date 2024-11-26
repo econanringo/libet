@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getAnalytics, Analytics, isSupported } from "firebase/analytics";
+import { getPerformance } from "firebase/performance";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
@@ -14,6 +15,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const perf = getPerformance(app);
 
 // Analytics を初期化するための型と条件分岐
 let analytics: Analytics | null = null;
@@ -25,4 +27,4 @@ if (typeof window !== "undefined") {
   });
 }
 
-export { db, analytics };
+export { db, analytics, perf };

@@ -28,8 +28,9 @@ export default async function VideoPage({
   const videoURL = `${baseURL}/videos/${videoId}`;
 
   return (
-    <div>
+    <div  className="container mx-auto">
       <h1>{video.title}</h1>
+      {/* columns-2 */}
       <iframe
         width="560"
         height="315"
