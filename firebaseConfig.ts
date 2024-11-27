@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getAnalytics, Analytics, isSupported } from "firebase/analytics";
+import { getPerformance } from "firebase/performance";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
@@ -25,4 +26,9 @@ if (typeof window !== "undefined") {
   });
 }
 
-export { db, analytics };
+let performance;
+if (typeof window !== "undefined") {
+  performance = getPerformance(app);
+}
+
+export { db, analytics, performance, app };
