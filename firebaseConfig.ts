@@ -15,7 +15,6 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const perf = getPerformance(app);
 
 // Analytics を初期化するための型と条件分岐
 let analytics: Analytics | null = null;
@@ -27,4 +26,9 @@ if (typeof window !== "undefined") {
   });
 }
 
-export { db, analytics, perf };
+let performance;
+if (typeof window !== "undefined") {
+  performance = getPerformance(app);
+}
+
+export { db, analytics, performance, app };

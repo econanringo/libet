@@ -6,9 +6,11 @@ import { analytics } from "@/firebaseConfig";
 import { logEvent } from "firebase/analytics";
 import { getDoc, doc } from "firebase/firestore";
 import { db } from "@/firebaseConfig";  // firestoreのインポートを確認
+import { getPerformance } from "firebase/performance";
 import localFont from "next/font/local";
 import "./globals.css";
 import { Inter } from "next/font/google";
+import { app } from "@/firebaseConfig";
 
 const inter = Inter({subsets: ['latin']})
 const geistSans = localFont({
@@ -35,6 +37,15 @@ export default function RootLayout({
       logEvent(analytics, "page_view");
     }
   }, []);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      // Firebase Performance を初期化
+      const performance = getPerformance(app);
+      console.log("Firebase Performance Monitoring is active.");
+    }
+  }, []);
+
 
   useEffect(() => {
     let title = "Libet"; // デフォルトタイトル
