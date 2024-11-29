@@ -8,6 +8,7 @@ import Image from "next/image";
 import axios from "axios";
 import { Video } from "@/types";
 
+// YouTube Data API で動画の詳細を取得
 const fetchYouTubeDetails = async (videoId: string) => {
   const apiKey = process.env.NEXT_PUBLIC_YOUTUBE_API_KEY;
   const url = `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&part=contentDetails&key=${apiKey}`;
@@ -17,8 +18,8 @@ const fetchYouTubeDetails = async (videoId: string) => {
 
   // ISO 8601 のフォーマットを「分:秒」に変換
   const match = duration.match(/PT(\d+M)?(\d+S)?/);
-  const minutes = match[1] ? parseInt(match[1].replace("M", "")) : 0;
-  const seconds = match[2] ? parseInt(match[2].replace("S", "")) : 0;
+  const minutes = match[1] ? parseInt(match[1]) : 0;
+  const seconds = match[2] ? parseInt(match[2]) : 0;
 
   return `${minutes}:${seconds.toString().padStart(2, "0")}`;
 };
@@ -27,7 +28,7 @@ export default function VideoListPage() {
   const [videos, setVideos] = useState<Video[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Firebase からデータを取得し、ランダムにシャッフル
+  // Firebase から動画データを取得
   const fetchVideos = async () => {
     setLoading(true);
     const videosRef = collection(db, "videos");
@@ -38,7 +39,7 @@ export default function VideoListPage() {
       ...doc.data(),
     })) as Video[];
 
-    // YouTube API で再生時間を取得
+    // YouTube API で各動画の分数を取得
     const videoDetails = await Promise.all(
       videoList.map(async (video) => {
         const duration = await fetchYouTubeDetails(video.videoId);
@@ -46,9 +47,7 @@ export default function VideoListPage() {
       })
     );
 
-    // 配列をランダムにシャッフル
-    const shuffledVideos = videoDetails.sort(() => Math.random() - 0.5);
-    setVideos(shuffledVideos);
+    setVideos(videoDetails);
     setLoading(false);
   };
 
@@ -76,38 +75,12 @@ export default function VideoListPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
-      {videos.length > 0 && (
-        <div className="mb-8 flex items-center space-x-8">
-          <Link href={`/videos/${videos[0].id}`} className="flex w-full">
-            <div className="flex-1">
-              <small className="text-red-500 font-bold">Recommend</small>
-              <h2 className="text-3xl font-semibold text-gray-800 mb-2">
-                {videos[0].title}
-              </h2>
-              <p className="text-sm text-gray-600">{videos[0].speaker}</p>
-              <p className="text-sm text-gray-600">{videos[0].date}</p>
-            </div>
-            <div className="relative w-full sm:w-1/2 lg:w-1/2 h-56 sm:h-64 lg:h-72 ml-4">
-              <Image
-                src={`https://img.youtube.com/vi/${videos[0].videoId}/0.jpg`}
-                alt={videos[0].title}
-                layout="fill"
-                objectFit="cover"
-                className="rounded-lg"
-              />
-              <span className="absolute bottom-2 right-2 bg-black bg-opacity-70 text-white text-sm px-2 py-1 rounded">
-                {videos[0].duration}
-              </span>
-            </div>
-          </Link>
-        </div>
-      )}
-      <div className="border border-gray-300"></div>
+      <h1 className="text-2xl text-center font-bold mb-6">動画一覧</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {videos.slice(1, 9).map((video) => (
-          <div key={video.id} className="relative pt-4 pb-6">
+        {videos.map((video) => (
+          <div key={video.id} className="relative">
             <Link href={`/videos/${video.id}`}>
-              <div className="relative w-full h-40 mb-4">
+              <div className="relative w-full h-40">
                 <Image
                   src={`https://img.youtube.com/vi/${video.videoId}/0.jpg`}
                   alt={video.title}
@@ -115,21 +88,17 @@ export default function VideoListPage() {
                   objectFit="cover"
                   className="rounded-lg"
                 />
+                {/* 動画の再生時間 */}
                 <span className="absolute bottom-2 right-2 bg-black bg-opacity-70 text-white text-sm px-2 py-1 rounded">
                   {video.duration}
                 </span>
               </div>
-              <h2 className="text-lg font-semibold text-gray-800">{video.title}</h2>
+              <h2 className="text-lg font-semibold mt-2">{video.title}</h2>
               <p className="text-sm text-gray-600">{video.speaker}</p>
-              <p className="text-sm text-gray-600">{video.date}</p>
             </Link>
           </div>
         ))}
       </div>
-      <div className="text-center">
-        <a href="/discover" className="text-white bg-red-500 hover:bg-red-600 focus:ring-4 focus:ring-primary-300 rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">もっと動画を見る</a>
-      </div>
-
     </div>
   );
 }
