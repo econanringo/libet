@@ -1,3 +1,5 @@
+import { ReactNode } from "react";
+
 export interface Video {
     duration: ReactNode;
     id?: string; // Firestore のドキュメント ID
