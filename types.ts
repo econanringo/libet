@@ -1,4 +1,5 @@
 export interface Video {
+    duration: ReactNode;
     id?: string; // Firestore のドキュメント ID
     title: string;
     videoId: string;
