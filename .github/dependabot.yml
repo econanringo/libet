@@ -6,4 +6,4 @@ updates:
     directory: "/"
     # npm レジストリの更新を毎日（平日）チェックする
     schedule:
-      interval: "daily"
+      interval: "weekly"
