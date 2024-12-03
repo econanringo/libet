@@ -6,4 +6,5 @@ updates:
     directory: "/"
     # npm レジストリの更新を毎日（平日）チェックする
     schedule:
-      interval: "weekly"
+      interval: "daily"
+    open-pull-requests-limit: 5 # 最大5つのPRを開く
