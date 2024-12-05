@@ -42,6 +42,11 @@ jobs:
           git add package*.json
           git diff-index --quiet HEAD || git commit -m "chore: weekly npm update"
 
+      - name: Push changes
+        run: |
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+          git push origin HEAD
+
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
@@ -49,4 +54,3 @@ jobs:
           title: "Weekly npm update"
           body: |
             This PR updates npm dependencies to their latest versions.
-          commit-message: "chore: weekly npm update"
