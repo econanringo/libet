@@ -2,51 +2,51 @@ name: Weekly npm Update
 
 on:
   schedule:
-    # 毎週月曜日の午前0時に実行 (UTC時間)
     - cron: '0 0 * * 1'
-
-  # 手動トリガーも許可 (必要に応じて)
   workflow_dispatch:
 
 jobs:
   npm-update:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    concurrency:
+      group: npm-update
+      cancel-in-progress: true
 
     steps:
-      # リポジトリをチェックアウト
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Node.js をセットアップ
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 'lts/*' # 最新のLTS版を使用
+          node-version: 'lts/*'
 
-      # 依存関係をインストール
       - name: Install dependencies
         run: npm install
 
-      # npm update を実行
       - name: Update dependencies
         run: npm update
 
-      # package-lock.json に変更があれば新しいブランチにコミット
+      - name: Reset working directory
+        run: |
+          git reset --hard
+          git clean -fd
+
       - name: Commit changes to a new branch
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git checkout -b npm-update-$(date +'%Y%m%d')
+          git checkout -b npm-update-$(date +'%Y%m%d%H%M%S')
           git add package*.json
           git diff-index --quiet HEAD || git commit -m "chore: weekly npm update"
 
-      # プルリクエストを作成
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
-          branch: npm-update-$(date +'%Y%m%d')
+          branch: npm-update-$(date +'%Y%m%d%H%M%S')
           title: "Weekly npm update"
           body: |
             This PR updates npm dependencies to their latest versions.
-            Please review the changes and run tests before merging.
           commit-message: "chore: weekly npm update"
