@@ -1,56 +1,44 @@
-name: Weekly npm Update
+name: Weekly npm dependencies update
 
 on:
   schedule:
-    - cron: '0 0 * * 1'
-  workflow_dispatch:
+    - cron: '0 0 * * 1' # 毎週月曜日の深夜に実行
+  workflow_dispatch: # 手動トリガーを有効化
 
 jobs:
-  npm-update:
+  update-dependencies:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    concurrency:
-      group: npm-update
-      cancel-in-progress: true
 
     steps:
-      - name: Checkout code
+      # リポジトリをチェックアウト
+      - name: Checkout repository
         uses: actions/checkout@v3
 
+      # Node.js 22のセットアップ
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 'lts/*'
+          node-version: '22' # Node.js 22を指定
 
-      - name: Install dependencies
-        run: npm install
-
-      - name: Update dependencies
-        run: npm update
-
-      - name: Reset working directory
+      # npm 依存関係を更新
+      - name: Update npm dependencies
         run: |
-          git reset --hard
-          git clean -fd
+          npm install
+          npm update
 
-      - name: Commit changes to a new branch
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git checkout -b npm-update-$(date +'%Y%m%d%H%M%S')
-          git add package*.json
-          git diff-index --quiet HEAD || git commit -m "chore: weekly npm update"
-
-      - name: Push changes
-        run: |
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
-          git push origin HEAD
-
+      # 変更がある場合、コミットとプルリクエストを作成
       - name: Create Pull Request
+        id: create-pull-request
         uses: peter-evans/create-pull-request@v5
         with:
-          branch: npm-update-$(date +'%Y%m%d%H%M%S')
-          title: "Weekly npm update"
+          branch: npm-update-${{ github.run_id }}
+          title: Weekly npm update
           body: |
             This PR updates npm dependencies to their latest versions.
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "[create-pull-request] automated change"
+          committer: GitHub <noreply@github.com>
+          author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+          signoff: false
+          delete-branch: false
+          draft: false
