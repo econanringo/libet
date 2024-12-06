@@ -16,7 +16,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// Analytics を初期化するための型と条件分岐
+// Analytics を初期化
 let analytics: Analytics | null = null;
 if (typeof window !== "undefined") {
   isSupported().then((supported) => {
@@ -26,6 +26,7 @@ if (typeof window !== "undefined") {
   });
 }
 
+// Performance を初期化
 let performance;
 if (typeof window !== "undefined") {
   performance = getPerformance(app);
