@@ -123,6 +123,11 @@ export default function RootLayout({
                     </a>
                   </li>
                   <li>
+                    <a href="/search" className="block py-2 pr-4 pl-3 text-gray-700 lg:bg-transparent lg:text-primary-700 lg:p-0 dark:text-white">
+                      Search
+                    </a>
+                  </li>
+                  <li>
                     <a href="https://sozanliberalarts.vercel.app" className="block py-2 pr-4 pl-3 text-gray-700 lg:bg-transparent lg:text-primary-700 lg:p-0 dark:text-white">
                       Sozan Liberal Arts
                     </a>

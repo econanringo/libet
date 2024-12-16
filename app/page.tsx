@@ -80,7 +80,7 @@ export default function VideoListPage() {
         <div className="mb-8 flex items-center space-x-8">
           <Link href={`/videos/${videos[0].id}`} className="flex w-full">
             <div className="flex-1">
-              <small className="text-red-500 font-bold">Recommend</small>
+              <small className="text-red-700 font-bold">Recommend</small>
               <h2 className="text-3xl font-semibold text-gray-800 mb-2">
                 {videos[0].title}
               </h2>
